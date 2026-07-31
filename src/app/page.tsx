@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import api from "./lib/axios";
+import HabitCard from "./components/HabitCard";
 
 interface Habit {
   id: number;
@@ -10,22 +11,36 @@ interface Habit {
   create_at: string;
 }
 
+interface HabitLog {
+  log_date: string;
+}
+
 export default function Home() {
   const [habits, setHabits] = useState<Habit[]>([]);
+  const [logsMap, setLogsMap] = useState<Record<number, string[]>>({});
   const [title, setTitle] = useState("");
   const [targetDays, setTargetDays] = useState("");
 
-  const fetchHabits = async () => {
+  const fetchAll = async () => {
     try {
       const res = await api.get<Habit[]>("/habits");
       setHabits(res.data);
+
+      const logsEntries = await Promise.all(
+        res.data.map(async (habit) => {
+          const logsRes = await api.get<HabitLog[]>(`/habits/${habit.id}/logs`);
+          return [habit.id, logsRes.data.map((l) => l.log_date)] as const;
+        })
+      );
+
+      setLogsMap(Object.fromEntries(logsEntries));
     } catch (error) {
       console.error(error);
     }
   };
 
   useEffect(() => {
-    fetchHabits();
+    fetchAll();
   }, []);
 
   const addHabit = async (e: React.FormEvent) => {
@@ -35,7 +50,7 @@ export default function Home() {
       await api.post("/habits", { title, target_days: Number(targetDays) });
       setTitle("");
       setTargetDays("");
-      fetchHabits();
+      fetchAll();
     } catch (error) {
       console.error(error);
     }
@@ -64,17 +79,16 @@ export default function Home() {
         </button>
       </form>
 
-      <div className="w-full max-w-md flex flex-col gap-3">
+     <div className="w-full max-w-md flex flex-col gap-3">
         {habits.map((habit) => (
-          <div
+          <HabitCard
             key={habit.id}
-            className="bg-card rounded-2xl p-4 flex justify-between items-center hover:-translate-y-1 hover:shadow-lg hover:shadow-accent/20
-            transition-all duration-300 animate-[fadeIn_0.4s_ease]"
-            
-          >
-            <span className="text-cream">{habit.title}</span>
-            <span className="text-accent text-sm">{habit.target_days} дн.</span>
-          </div>
+            id={habit.id}
+            title={habit.title}
+            targetDays={habit.target_days}
+            logDates={logsMap[habit.id] ?? []}
+            onChange={fetchAll}
+          />
         ))}
       </div>
     </div>
