@@ -1,7 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import api from "./lib/axios";
+import { useAuth } from "./context/AuthContext";
 import HabitCard from "./components/HabitCard";
+import ProfileMenu from "./components/ProfileMenu";
 
 interface Habit {
   id: number;
@@ -16,10 +19,21 @@ interface HabitLog {
 }
 
 export default function Home() {
+  const router = useRouter();
+  const { user, loading } = useAuth();
+
+
   const [habits, setHabits] = useState<Habit[]>([]);
   const [logsMap, setLogsMap] = useState<Record<number, string[]>>({});
   const [title, setTitle] = useState("");
   const [targetDays, setTargetDays] = useState("");
+  
+  
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push("/auth");
+    }
+  }, [loading, user, router]);
 
   const fetchAll = async () => {
     try {
@@ -39,15 +53,26 @@ export default function Home() {
     }
   };
 
-  useEffect(() => {
+ useEffect(() => {
+    if (!user) {
+      setHabits([]);
+      setLogsMap({});
+      return;
+    }
+
     fetchAll();
-  }, []);
+  }, [user]);
 
   const addHabit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title || !targetDays) return;
+    if (!title || !targetDays || !user?.id) return;
     try {
-      await api.post("/habits", { title, target_days: Number(targetDays) });
+      await api.post("/habits", {
+        title,
+        target_days: Number(targetDays),
+        user_id: user.id,
+        userId: user.id,
+      });
       setTitle("");
       setTargetDays("");
       fetchAll();
@@ -56,9 +81,22 @@ export default function Home() {
     }
   };
 
+
+  if (loading || !user) {
+    return (
+      <div className="w-full min-h-screen bg-dark flex items-center justify-center">
+        <p className="text-cream font-skranji">Завантаження...</p>
+      </div>
+    );
+  }
+
+
   return (
     <div className="w-full min-h-screen bg-dark flex flex-col items-center px-4 py-10 font-skranji">
-      <h1 className="text-cream text-3xl mb-8 tracking-wide">Habit tracker</h1>
+      <div className="w-full max-w-md flex justify-between items-center mb-8">
+        <h1 className="text-cream text-3xl tracking-wide">Habit tracker</h1>
+        <ProfileMenu />
+      </div>
 
       <form onSubmit={addHabit} className="flex gap-2 mb-8 w-full max-w-md">
         <input

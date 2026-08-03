@@ -1,21 +1,47 @@
 "use client";
-import { useState } from "react";
-import api from "../lib/axios";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "../context/AuthContext";
 
 export default function AuthPage() {
+  const router = useRouter();
+  const { login, register, user } = useAuth();
+
   const [isLogin, setIsLogin] = useState(true);
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ email: "", password: "", nickname: "" });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      router.replace("/");
+    }
+  }, [router, user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const endpoint = isLogin ? "/auth/login" : "/auth/register";
+    setError("");
+    setLoading(true);
+
     try {
-      const res = await api.post(endpoint, form);
-      console.log(res.data);
-    } catch (error) {
-      console.error(error);
+      if (isLogin) {
+        await login(form.email, form.password);
+      } else {
+        await register(form.email, form.password, form.nickname);
+      }
+    } catch (err: any) {
+      setError(
+        err.response?.status === 401
+          ? "Невірний email або пароль"
+          : err.response?.status === 409
+          ? "Цей email вже зареєстрований"
+          : "Щось пішло не так, спробуй ще раз"
+      );
+    } finally {
+      setLoading(false);
     }
   };
+  
 
   return (
     <div className="w-full min-h-screen bg-dark flex items-center justify-center font-skranji">
@@ -25,30 +51,37 @@ export default function AuthPage() {
         </h1>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          {!isLogin && (
+            <input
+              placeholder="Нікнейм"
+              value={form.nickname}
+              onChange={(e) => setForm({ ...form, nickname: e.target.value })}
+              className="bg-dark text-cream rounded-lg px-4 py-2 outline-none border border-transparent focus:border-accent transition-colors duration-300"
+            />
+          )}
           <input
             type="email"
             placeholder="Email"
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
-            className="bg-dark text-cream rounded-lg px-4 py-2 outline-none
-            border border-transparent focus:border-accent transition-colors duration-300"
+            className="bg-dark text-cream rounded-lg px-4 py-2 outline-none border border-transparent focus:border-accent transition-colors duration-300"
           />
           <input
             type="password"
             placeholder="Пароль"
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
-            className="bg-dark text-cream rounded-lg px-4 py-2 outline-none
-            border border-transparent focus:border-accent transition-colors duration-300"
+            className="bg-dark text-cream rounded-lg px-4 py-2 outline-none border border-transparent focus:border-accent transition-colors duration-300"
           />
+
+          {error && <p className="text-red-400 text-sm text-center">{error}</p>}
 
           <button
             type="submit"
-            className="bg-accent text-cream rounded-lg py-2 mt-2
-            hover:bg-cream hover:text-dark active:scale-95
-            transition-all duration-300"
+            disabled={loading}
+            className="bg-accent text-cream rounded-lg py-2 mt-2 hover:bg-cream hover:text-dark active:scale-95 transition-all duration-300 disabled:opacity-50"
           >
-            {isLogin ? "Увійти" : "Зареєструватись"}
+            {loading ? "Зачекай..." : isLogin ? "Увійти" : "Зареєструватись"}
           </button>
         </form>
 
