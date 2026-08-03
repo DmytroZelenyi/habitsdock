@@ -78,7 +78,7 @@ export default function Home() {
           +
         </button>
       </form>
-
+      
      <div className="w-full max-w-md flex flex-col gap-3">
         {habits.map((habit) => (
           <HabitCard

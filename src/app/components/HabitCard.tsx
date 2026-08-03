@@ -30,6 +30,7 @@ export default function HabitCard({ id, title, targetDays, logDates, onChange }:
   };
   const handleDelete = async () => {
     await api.delete(`/habits/${id}`);
+    confirm("Ви впевнені, що хочете видалити цю звичку?") &&
     onChange();
   }
   return (
@@ -41,6 +42,7 @@ export default function HabitCard({ id, title, targetDays, logDates, onChange }:
         }`}
     >
       <div>
+        
         <h3 className="text-cream text-lg font-skranji tracking-wide">{title}</h3>
         <p className="text-accent text-sm mt-1">
           🔥 {streak}/{targetDays}
