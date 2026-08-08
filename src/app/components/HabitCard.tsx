@@ -6,7 +6,7 @@ type HabitCardProps = {
   id: number;
   title: string;
   targetDays: number;
-  logDates: string[]; // дати виконання цієї звички
+  logDates: string[]; // дата виконання звички
   onChange: () => void; 
 };
 
@@ -35,13 +35,13 @@ export default function HabitCard({ id, title, targetDays, logDates, onChange }:
   }
   return (
     <div
-      className={`group bg-card rounded-2xl p-5 flex items-center justify-between transition-all duration-300 ease-out border relative
+      className={`group w-150 rounded-2xl p-8 right-17 flex items-center justify-between transition-all duration-300 ease-out border relative
         ${achieved
           ? "shadow-[0_0_25px_rgba(105,117,101,0.6)] border-accent animate-pulse"
           : "shadow-md hover:shadow-xl hover:shadow-accent/30 hover:-translate-y-1 border-transparent hover:border-accent/50"
         }`}
     >
-      <div>
+      <div className="flex flex-col w-1/3">
         
         <h3 className="text-cream text-lg font-skranji tracking-wide">{title}</h3>
         <p className="text-accent text-sm mt-1">

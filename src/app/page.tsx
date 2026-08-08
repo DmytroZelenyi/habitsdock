@@ -92,7 +92,7 @@ export default function Home() {
 
 
   return (
-    <div className="w-full min-h-screen bg-dark flex flex-col items-center px-4 py-10 font-skranji">
+    <div className="w-full min-h-screen bg-dark flex flex-col justify-center items-center px-4 py-10 font-skranji">
       <div className="w-full max-w-md flex justify-between items-center mb-8">
         <h1 className="text-cream text-3xl tracking-wide">Habit tracker</h1>
         <ProfileMenu />
@@ -103,6 +103,7 @@ export default function Home() {
           placeholder="Назва звички"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+          maxLength={36}
           className="flex-1 bg-card text-cream rounded-lg px-4 py-2 outline-none border border-transparent focus:border-accent transition-colors duration-300" />
         <input
           type="number"
