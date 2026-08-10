@@ -1,5 +1,6 @@
 "use client";
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { useEffect } from "react";
+import { create } from "zustand";
 import api from "../lib/axios";
 
 interface User {
@@ -9,7 +10,7 @@ interface User {
   avatar_url: string | null;
 }
 
-interface AuthContextType {
+interface AuthState {
   user: User | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
@@ -17,8 +18,6 @@ interface AuthContextType {
   logout: () => void;
   refreshUser: () => Promise<void>;
 }
-
-const AuthContext = createContext<AuthContextType | null>(null);
 
 const setAuthHeader = (token: string | null) => {
   if (token) {
@@ -28,66 +27,63 @@ const setAuthHeader = (token: string | null) => {
   }
 };
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+export const useAuthStore = create<AuthState>((set, get) => ({
+  user: null,
+  loading: true,
 
-  const refreshUser = async () => {
-    setLoading(true);
-
+  refreshUser: async () => {
     const token = localStorage.getItem("token");
+    set({ loading: true });
+
     if (!token) {
       setAuthHeader(null);
-      setUser(null);
-      setLoading(false);
+      set({ user: null, loading: false });
       return;
     }
 
     setAuthHeader(token);
+
     try {
       const res = await api.get<User>("/auth/me");
-      setUser(res.data);
+      set({ user: res.data, loading: false });
     } catch {
       localStorage.removeItem("token");
-      setUser(null);
-    } finally {
-      setLoading(false);
+      setAuthHeader(null);
+      set({ user: null, loading: false });
     }
-  };
+  },
 
-  useEffect(() => {
-    refreshUser();
-  }, []);
-
-  const login = async (email: string, password: string) => {
+  login: async (email, password) => {
     const res = await api.post("/auth/login", { email, password });
     localStorage.setItem("token", res.data.token);
     setAuthHeader(res.data.token);
-    await refreshUser();
-  };
+    await get().refreshUser();
+  },
 
-  const register = async (email: string, password: string, nickname: string) => {
+  register: async (email, password, nickname) => {
     const res = await api.post("/auth/register", { email, password, nickname });
     localStorage.setItem("token", res.data.token);
     setAuthHeader(res.data.token);
-    await refreshUser();
-  };
+    await get().refreshUser();
+  },
 
-  const logout = () => {
+  logout: () => {
     localStorage.removeItem("token");
     setAuthHeader(null);
-    setUser(null);
-  };
+    set({ user: null, loading: false });
+  },
+}));
 
-  return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, refreshUser }}>
-      {children}
-    </AuthContext.Provider>
-  );
+export function AuthInitializer() {
+  const refreshUser = useAuthStore((state) => state.refreshUser);
+
+  useEffect(() => {
+    void refreshUser();
+  }, [refreshUser]);
+
+  return null;
 }
 
 export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
-  return ctx;
+  return useAuthStore();
 }

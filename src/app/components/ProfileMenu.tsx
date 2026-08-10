@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../store/AuthStore";
 import api from "../lib/axios";
 
 export default function ProfileMenu() {
