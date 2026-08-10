@@ -26,7 +26,6 @@ Each habit shows a weekly view (Mon–Sun) of completed days, a live streak coun
 - Axios (with automatic JWT header injection)
 - React Zustand for global auth state
 
-- 
 **Backend**
 - Node.js + Express + TypeScript
 - [Neon](https://neon.tech/) (serverless Postgres)
