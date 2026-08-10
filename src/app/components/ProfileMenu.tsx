@@ -89,7 +89,7 @@ export default function ProfileMenu() {
               onChange={handleFileChange}
               className="hidden"
             />
-            <span className="text-accent text-xs">Натисни, щоб змінити фото</span>
+            <span className="text-accent text-xs">Click to change avatar</span>
           </div>
 
           {editing ? (
@@ -112,7 +112,7 @@ export default function ProfileMenu() {
               onClick={() => setEditing(true)}
               className="text-cream text-sm text-center hover:text-accent transition-colors duration-300"
             >
-              Змінити нікнейм
+              Change nickname
             </button>
           )}
 
@@ -120,7 +120,7 @@ export default function ProfileMenu() {
             onClick={logout}
             className="text-red-400 text-sm hover:text-red-300 transition-colors duration-300 mt-2"
           >
-            Вийти
+            Leave
           </button>
         </div>
       )}

@@ -85,7 +85,7 @@ export default function Home() {
   if (loading || !user) {
     return (
       <div className="w-full min-h-screen bg-dark flex items-center justify-center">
-        <p className="text-cream font-skranji">Завантаження...</p>
+        <p className="text-cream font-skranji">Loading</p>
       </div>
     );
   }
@@ -100,14 +100,14 @@ export default function Home() {
 
       <form onSubmit={addHabit} className="flex gap-2 mb-8 w-full max-w-md">
         <input
-          placeholder="Назва звички"
+          placeholder="Habit name"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           maxLength={36}
           className="flex-1 bg-card text-cream rounded-lg px-4 py-2 outline-none border border-transparent focus:border-accent transition-colors duration-300" />
         <input
           type="number"
-          placeholder="Днів"
+          placeholder="Days"
           value={targetDays}
           onChange={(e) => setTargetDays(e.target.value)}
           className="w-20 bg-card text-cream rounded-lg px-3 py-2 outline-none  border border-transparent focus:border-accent transition-colors duration-300"/>

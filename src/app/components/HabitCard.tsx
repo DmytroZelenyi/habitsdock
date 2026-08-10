@@ -10,7 +10,7 @@ type HabitCardProps = {
   onChange: () => void; 
 };
 
-const WEEKDAY_LABELS = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд"];
+const WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun",];
 
 export default function HabitCard({ id, title, targetDays, logDates, onChange }: HabitCardProps) {
 
@@ -30,7 +30,7 @@ export default function HabitCard({ id, title, targetDays, logDates, onChange }:
   };
   const handleDelete = async () => {
     await api.delete(`/habits/${id}`);
-    confirm("Ви впевнені, що хочете видалити цю звичку?") &&
+    confirm("Do you want to delete this habit?") &&
     onChange();
   }
   return (
@@ -48,7 +48,7 @@ export default function HabitCard({ id, title, targetDays, logDates, onChange }:
           🔥 {streak}/{targetDays}
         </p>
         {achieved && (
-          <p className="text-cream text-xs mt-1 font-bold">Ціль досягнута 🎉</p>
+          <p className="text-cream text-xs mt-1 font-bold">The goal achieved 🎉</p>
         )}
       </div>
         <button 
