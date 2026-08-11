@@ -1,7 +1,7 @@
 
 
 <p align="center">
-  <img src="https://github.com/DmytroZelenyi/habitdock/public/image.png?raw=true" alt="Project preview" width="600">
+  <img src="https://raw.githubusercontent.com/DmytroZelenyi/habitdock/main/public/image.png" alt="Project preview" width="600">
 </p>
 
 
