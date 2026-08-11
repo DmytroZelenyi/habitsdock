@@ -1,3 +1,11 @@
+
+
+<p align="center">
+  <img src="https://github.com/DmytroZelenyi/habitdock/blob/main/public/image.png?raw=true" alt="Project preview" width="600">
+</p>
+
+
+
 # Habit Tracker
  
 A minimalist habit tracker that helps you build consistency, one honest day at a time. Track your habits, mark them done, and watch your streak grow — but only if you actually show up every day.
